@@ -116,7 +116,9 @@ class Linkify extends StatelessWidget {
       textWidthBasis: textWidthBasis,
       text: buildTextSpan(
         elements,
+        additionalText: additionalText,
         style: Theme.of(context).textTheme.bodyText2.merge(style),
+        additionalTextStyle: additionalTextStyle,
         onOpen: onOpen,
         linkStyle: Theme.of(context)
             .textTheme
@@ -281,7 +283,9 @@ class SelectableLinkify extends StatelessWidget {
 /// Raw TextSpan builder for more control on the RichText
 TextSpan buildTextSpan(
   List<LinkifyElement> elements, {
+  String additionalText,
   TextStyle style,
+  TextStyle additionalTextStyle,
   TextStyle linkStyle,
   LinkCallback onOpen,
 }) {
@@ -303,11 +307,11 @@ TextSpan buildTextSpan(
       }
     },
   ).toList();
-  if (widget.additionalText != null && widget.additionalText.isNotEmpty) {
+  if (additionalText != null && additionalText.isNotEmpty) {
     children.add(
       TextSpan(
-        text: widget.additionalText,
-        style: widget.additionalTextStyle,
+        text: additionalText,
+        style: additionalTextStyle,
       ),
     );
   }
