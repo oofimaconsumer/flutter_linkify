@@ -22,6 +22,8 @@ class Linkify extends StatelessWidget {
   /// Text to be linkified
   final String text;
 
+  final String additionalText;
+
   /// Linkifiers to be used for linkify
   final List<Linkifier> linkifiers;
 
@@ -35,6 +37,8 @@ class Linkify extends StatelessWidget {
 
   /// Style for non-link text
   final TextStyle style;
+
+  final TextStyle additionalTextStyle;
 
   /// Style of link text
   final TextStyle linkStyle;
@@ -72,11 +76,13 @@ class Linkify extends StatelessWidget {
   const Linkify({
     Key key,
     @required this.text,
+    this.additionalText,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
     this.options,
     // TextSpan
     this.style,
+    this.additionalTextStyle,
     this.linkStyle,
     // RichText
     this.textAlign = TextAlign.start,
@@ -279,24 +285,33 @@ TextSpan buildTextSpan(
   TextStyle linkStyle,
   LinkCallback onOpen,
 }) {
+  final children = elements.map<TextSpan>(
+    (element) {
+      if (element is LinkableElement) {
+        return TextSpan(
+          text: element.text,
+          style: linkStyle,
+          recognizer: onOpen != null
+              ? (TapGestureRecognizer()..onTap = () => onOpen(element))
+              : null,
+        );
+      } else {
+        return TextSpan(
+          text: element.text,
+          style: style,
+        );
+      }
+    },
+  ).toList();
+  if (widget.additionalText != null && widget.additionalText.isNotEmpty) {
+    children.add(
+      TextSpan(
+        text: widget.additionalText,
+        style: widget.additionalTextStyle,
+      ),
+    );
+  }
   return TextSpan(
-    children: elements.map<TextSpan>(
-      (element) {
-        if (element is LinkableElement) {
-          return TextSpan(
-            text: element.text,
-            style: linkStyle,
-            recognizer: onOpen != null
-                ? (TapGestureRecognizer()..onTap = () => onOpen(element))
-                : null,
-          );
-        } else {
-          return TextSpan(
-            text: element.text,
-            style: style,
-          );
-        }
-      },
-    ).toList(),
+    children: children,
   );
 }
